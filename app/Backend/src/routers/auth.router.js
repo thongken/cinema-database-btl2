@@ -1,0 +1,18 @@
+import authController from "../controllers/auth.controller.js";
+import express from "express";
+import adminRouter from "./admin.router.js";
+
+const authRouter = express.Router();
+
+authRouter.post('/register', authController.register);
+authRouter.post('/login', authController.login);
+authRouter.post('/logout', authController.logout);
+authRouter.get('/raps',authController.raps);
+authRouter.get('/raps/:MaRapPhim/phims', authController.getPhimsByRap);
+authRouter.get('/phims/:MaPhim', authController.getPhimDetail);
+authRouter.get('/suat-chieus', authController.getSuatChieus);
+authRouter.get('/phims/search', authController.searchPhim); // API tìm kiếm công khai
+
+
+
+export default authRouter;
