@@ -1,0 +1,68 @@
+USE CINEMA;
+
+/* =======================================================================
+   BÁO CÁO VÀ TRA CỨU DỮ LIỆU
+   ======================================================================= */
+
+DELIMITER $$
+
+-- 1. Xem lịch chiếu phim theo ngày
+CREATE PROCEDURE SP_XemLichChieu (
+    IN p_NgayChieu DATE
+)
+BEGIN
+    SELECT 
+        p.TenPhim,
+        r.Ten AS RapChieu,
+        pc.Ten AS PhongChieu,
+        s.GioBatDau,
+        s.GioKetThuc,
+        s.GiaVeCoBan,
+        (pc.SoGhe - (
+            SELECT COUNT(*) FROM VE_XEM_PHIM v 
+            WHERE v.MaSuatChieu = s.MaSuatChieu AND v.TrangThai <> 'Hủy'
+        )) AS GheTrong
+    FROM SUAT_CHIEU s
+    JOIN PHIM p ON s.MaPhim = p.MaPhim
+    JOIN PHONG_CHIEU pc ON s.MaPhong = pc.MaPhong
+    JOIN RAP_CHIEU_PHIM r ON pc.MaRapPhim = r.MaRapPhim
+    WHERE s.NgayChieu = p_NgayChieu
+    ORDER BY s.GioBatDau;
+END$$
+
+-- 2. Báo cáo doanh thu theo phim
+CREATE PROCEDURE SP_BaoCaoDoanhThuPhim ()
+BEGIN
+    SELECT 
+        p.MaPhim,
+        p.TenPhim,
+        COUNT(v.MaVe) AS SoVeDaBan,
+        FUNC_TinhDoanhThuPhim(p.MaPhim) AS TongDoanhThu
+    FROM PHIM p
+    LEFT JOIN SUAT_CHIEU s ON p.MaPhim = s.MaPhim
+    LEFT JOIN VE_XEM_PHIM v ON s.MaSuatChieu = v.MaSuatChieu AND v.TrangThai = 'Đã thanh toán'
+    GROUP BY p.MaPhim, p.TenPhim
+    ORDER BY TongDoanhThu DESC;
+END$$
+
+-- 3. Lịch sử giao dịch của khách hàng
+CREATE PROCEDURE SP_LichSuGiaoDich (
+    IN p_MaKH VARCHAR(20)
+)
+BEGIN
+    SELECT 
+        dh.MaDonHang,
+        dh.ThoiGianDat,
+        dh.TongTien,
+        dh.TrangThai,
+        GROUP_CONCAT(DISTINCT p.TenPhim SEPARATOR ', ') AS PhimDaMua
+    FROM DON_HANG dh
+    LEFT JOIN VE_XEM_PHIM v ON dh.MaDonHang = v.MaDonHang
+    LEFT JOIN SUAT_CHIEU s ON v.MaSuatChieu = s.MaSuatChieu
+    LEFT JOIN PHIM p ON s.MaPhim = p.MaPhim
+    WHERE dh.MaNguoiDung_KH = p_MaKH
+    GROUP BY dh.MaDonHang, dh.ThoiGianDat, dh.TongTien, dh.TrangThai
+    ORDER BY dh.ThoiGianDat DESC;
+END$$
+
+DELIMITER ;
