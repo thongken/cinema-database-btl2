@@ -1,5 +1,5 @@
 USE CINEMA;
-
+SET NAMES utf8mb4;
 
 /* ====== 1. TÀI KHOẢN, KHÁCH HÀNG, QTV ====== */
 INSERT INTO TAI_KHOAN (MaNguoiDung, HoTen, DiaChi, SDT, GioiTinh, Email, MatKhau) VALUES
@@ -100,11 +100,11 @@ INSERT INTO MAT_HANG (MaHang, TenHang, DonGia, SoLuongTon, MoTa, LoaiHang) VALUE
 ('MH005', N'Áo thun Avengers',   200000,  30, N'Áo thun in hình', N'QUA_LUU_NIEM');
 
 INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
-('DH001', 'KH001', N'Online',   '2024-11-20 10:00', 105000, N'Đã thanh toán'),
-('DH002', 'KH002', N'Tại quầy', '2024-11-20 10:15',  70000, N'Chờ thanh toán'),
-('DH003', 'KH003', N'Online',   '2024-11-20 11:00',  60000, N'Đã thanh toán'),
-('DH004', 'KH004', N'Tại quầy', '2024-11-20 12:30',  80000, N'Hủy'),
-('DH005', 'KH005', N'Online',   '2024-11-20 13:45', 400000, N'Đã thanh toán');
+('DH001', 'KH001', N'Online',   '2024-11-20 10:00', 105000, 'Đã thanh toán'),
+('DH002', 'KH002', N'Tại quầy', '2024-11-20 10:15',  70000, 'Chờ thanh toán'),
+('DH003', 'KH003', N'Online',   '2024-11-20 11:00',  60000, 'Đã thanh toán'),
+('DH004', 'KH004', N'Tại quầy', '2024-11-20 12:30',  80000, 'Hủy'),
+('DH005', 'KH005', N'Online',   '2024-11-20 13:45', 400000, 'Đã thanh toán');
 
 INSERT INTO GOM (MaDonHang, MaHang, SoLuong, DonGia) VALUES
 ('DH001','MH001',1,45000),
@@ -114,11 +114,11 @@ INSERT INTO GOM (MaDonHang, MaHang, SoLuong, DonGia) VALUES
 ('DH005','MH005',2,200000);
 
 INSERT INTO THANH_TOAN (MaThanhToan, MaDonHang, NgayThanhToan, PhuongThuc, TrangThai, SoTien) VALUES
-('TT001','DH001','2024-11-20 10:05', N'Thẻ',        N'Đã thanh toán', 105000),
-('TT002','DH002','2024-11-20 10:20', N'Tiền mặt',   N'Đang xử lý',     70000),
-('TT003','DH003','2024-11-20 11:05', N'Ví điện tử', N'Đã thanh toán',  60000),
-('TT004','DH004','2024-11-20 12:40', N'Tiền mặt',   N'Thất bại',       80000),
-('TT005','DH005','2024-11-20 13:50', N'Thẻ',        N'Đã thanh toán', 400000);
+('TT001','DH001','2024-11-20 10:05', N'Thẻ',        'Đã thanh toán', 105000),
+('TT002','DH002','2024-11-20 10:20', N'Tiền mặt',   'Đang xử lý',     70000),
+('TT003','DH003','2024-11-20 11:05', N'Ví điện tử', 'Đã thanh toán',  60000),
+('TT004','DH004','2024-11-20 12:40', N'Tiền mặt',   'Thất bại',       80000),
+('TT005','DH005','2024-11-20 13:50', N'Thẻ',        'Đã thanh toán', 400000);
 
 
 
@@ -146,11 +146,11 @@ INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe,
                          MaNguoiDung_KH, MaDonHang,
                          GiaVeCuoi, NgayDat, TrangThai)
 VALUES
-('VE001','SC001','P001','A',1, 'KH001','DH001', 75000,'2024-11-20 10:00', N'Đã thanh toán'),
-('VE002','SC001','P001','A',2, 'KH002','DH002', 90000,'2024-11-20 10:15', N'Đã đặt'),
-('VE003','SC002','P001','B',3, 'KH003','DH003', 60000,'2024-11-20 11:00', N'Đã thanh toán'),
-('VE004','SC003','P002','A',4, 'KH004','DH004', 95000,'2024-11-20 12:30', N'Hủy'),
-('VE005','SC004','P003','C',5, 'KH005','DH005', 60000,'2024-11-20 13:45', N'Đã thanh toán');
+('VE001','SC001','P001','A',1, 'KH001','DH001', 75000,'2024-11-20 10:00', 'Đã thanh toán'),
+('VE002','SC001','P001','A',2, 'KH002','DH002', 90000,'2024-11-20 10:15', 'Đã đặt'),
+('VE003','SC002','P001','B',3, 'KH003','DH003', 60000,'2024-11-20 11:00', 'Đã thanh toán'),
+('VE004','SC003','P002','A',4, 'KH004','DH004', 95000,'2024-11-20 12:30', 'Hủy'),
+('VE005','SC004','P003','C',5, 'KH005','DH005', 60000,'2024-11-20 13:45', 'Đã thanh toán');
 
 
 INSERT INTO AP_DUNG (MaVe, MaKhuyenMai) VALUES

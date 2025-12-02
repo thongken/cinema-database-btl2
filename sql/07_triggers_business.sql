@@ -1,24 +1,49 @@
 USE CINEMA;
--- TRIGGER RB1: Ngày chiếu >= ngày khởi chiếu phim
 
+-- Xóa trigger cũ nếu có để tránh lỗi trùng lặp khi chạy lại
+DROP TRIGGER IF EXISTS TRG_SC_CheckNgayPhim;
+DROP TRIGGER IF EXISTS TRG_SC_CheckNgayPhim_Update;
+
+-- TRIGGER RB1: Ngày chiếu >= ngày khởi chiếu phim (Xử lý khi INSERT)
 DELIMITER $$
 CREATE TRIGGER TRG_SC_CheckNgayPhim
-AFTER INSERT ON SUAT_CHIEU
+BEFORE INSERT ON SUAT_CHIEU  -- Đổi từ AFTER thành BEFORE
 FOR EACH ROW
 BEGIN
-    DECLARE ngayKhoiChieu DATE;
+    DECLARE v_NgayKhoiChieu DATE;
 
-    SELECT NgayKhoiChieu INTO ngayKhoiChieu
+    SELECT NgayKhoiChieu INTO v_NgayKhoiChieu
     FROM PHIM
     WHERE MaPhim = NEW.MaPhim;
 
-    IF NEW.NgayChieu < ngayKhoiChieu THEN
+    IF NEW.NgayChieu < v_NgayKhoiChieu THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Ngày chiếu phải >= ngày khởi chiếu phim.';
     END IF;
 END$$
 DELIMITER ;
 
+-- Bổ sung TRIGGER RB1 cho trường hợp UPDATE (Sửa dữ liệu)
+DELIMITER $$
+CREATE TRIGGER TRG_SC_CheckNgayPhim_Update
+BEFORE UPDATE ON SUAT_CHIEU
+FOR EACH ROW
+BEGIN
+    DECLARE v_NgayKhoiChieu DATE;
+
+    -- Chỉ kiểm tra nếu MaPhim hoặc NgayChieu có sự thay đổi
+    IF NEW.MaPhim <> OLD.MaPhim OR NEW.NgayChieu <> OLD.NgayChieu THEN
+        SELECT NgayKhoiChieu INTO v_NgayKhoiChieu
+        FROM PHIM
+        WHERE MaPhim = NEW.MaPhim;
+
+        IF NEW.NgayChieu < v_NgayKhoiChieu THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Ngày chiếu cập nhật phải >= ngày khởi chiếu phim.';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
 
 
 -- TRIGGER RB2: Không trùng thời gian chiếu trong cùng phòng
@@ -138,9 +163,29 @@ DELIMITER ;
    Chỉ cộng điểm khi giao dịch THANH_TOAN chuyển sang 'Đã thanh toán'.
    Ví dụ: cứ 10.000 VND được 1 điểm.
    ======================================================================= */
-   DELIMITER $$
+   
+-- Xóa trigger cũ
+DROP TRIGGER IF EXISTS TRG_TT_CongDiemThuong;
+DROP TRIGGER IF EXISTS TRG_TT_CongDiemThuong_Insert;
+DROP TRIGGER IF EXISTS TRG_TT_CongDiemThuong_Update;
 
-CREATE TRIGGER TRG_TT_CongDiemThuong
+DELIMITER $$
+
+-- 1. Xử lý khi INSERT (Thanh toán ngay lúc tạo)
+CREATE TRIGGER TRG_TT_CongDiemThuong_Insert
+AFTER INSERT ON THANH_TOAN
+FOR EACH ROW
+BEGIN
+    IF NEW.TrangThai = 'Đã thanh toán' THEN
+        UPDATE KHACH_HANG KH
+        JOIN DON_HANG DH ON DH.MaNguoiDung_KH = KH.MaNguoiDung
+        SET KH.DiemTichLuy = KH.DiemTichLuy + FLOOR(NEW.SoTien / 10000)
+        WHERE DH.MaDonHang = NEW.MaDonHang;
+    END IF;
+END$$
+
+-- 2. Xử lý khi UPDATE (Cập nhật từ trạng thái khác sang Đã thanh toán)
+CREATE TRIGGER TRG_TT_CongDiemThuong_Update
 AFTER UPDATE ON THANH_TOAN
 FOR EACH ROW
 BEGIN

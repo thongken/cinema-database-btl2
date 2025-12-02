@@ -1,4 +1,6 @@
 USE CINEMA;
+SET NAMES utf8mb4;
+
 /* =======================================================================
    Thêm xóa sửa phim
    ======================================================================= */
@@ -40,7 +42,8 @@ BEGIN
 
 END$$
 DELIMITER ;
---sửa
+
+-- Update Phim
 DELIMITER $$
 CREATE PROCEDURE SP_Update_PHIM (
     IN p_MaPhim VARCHAR(20),
@@ -92,7 +95,8 @@ BEGIN
 
 END$$
 DELIMITER ;
---xóa
+
+-- Delete Phim
 DELIMITER $$
 CREATE PROCEDURE SP_Delete_PHIM_Flexible (
     IN p_MaPhim VARCHAR(20)

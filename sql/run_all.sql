@@ -8,4 +8,4 @@ SOURCE ./sql/07_triggers_business.sql;
 SOURCE ./sql/08_triggers_tongtien.sql;
 SOURCE ./sql/09_sp_view_data.sql;
 
-SELECT 'Database CINEMA đã được tạo thành công với đầy đủ Procedures và Functions!' AS message;
+SELECT 'Database CINEMA has been successfully created with all Procedures and Functions!' AS message;
