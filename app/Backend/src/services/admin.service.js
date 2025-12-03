@@ -1,4 +1,5 @@
 import prisma from "../common/prisma/prisma.init.js";
+import { BadRequestError } from "../helpers/handleError.js";
 
 class AdminService {
     // 1. Tìm kiếm phim (Gọi SP_TimKiemPhim)
